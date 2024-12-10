@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>リアルタイムマッチング</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-messages" id="chatMessages">
+            <!-- メッセージがここに追加される -->
+        </div>
+    </div>
+
+    <div class="button-container">
+        <button id="allow">マッチング許可</button>
+        <button id="disallow">マッチング許可解除</button>
+        <button id="count">マッチング待ち人数</button>
+        <button id="start">マッチング開始</button>
+    </div>
+
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
