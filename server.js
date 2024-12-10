@@ -9,9 +9,7 @@ const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
 
 app.use(cors());
-
-// 静的ファイルを提供
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'))); // 静的ファイルの提供
 
 let users = {}; // マッチング許可状態の管理
 
@@ -24,48 +22,51 @@ function generatePassword() {
     return `${letter}${number}`;
 }
 
-// クライアント接続時
 io.on('connection', (socket) => {
     console.log('ユーザー接続:', socket.id);
 
+    // 初期化
+    users[socket.id] = { allowMatching: false };
+    console.log('現在の状態:', users);
+
     // マッチング許可
     socket.on('allowMatching', () => {
-        users[socket.id] = socket.id;
+        users[socket.id].allowMatching = true;
+        socket.emit('message', 'マッチングを許可しました。');
         console.log('許可:', users);
     });
 
     // マッチング許可解除
     socket.on('disallowMatching', () => {
-        delete users[socket.id];
+        users[socket.id].allowMatching = false;
+        socket.emit('message', 'マッチング許可を解除しました。');
         console.log('解除:', users);
     });
 
     // マッチング待ち人数
     socket.on('getCount', () => {
-        const count = Object.keys(users).length;
-        socket.emit('countResponse', count);
+        const count = Object.values(users).filter((u) => u.allowMatching).length;
+        socket.emit('message', `現在のマッチング待ち人数: ${count}人`);
     });
 
     // マッチング開始
     socket.on('startMatching', () => {
-        const availableUsers = Object.keys(users).filter((id) => id !== socket.id);
+        const availableUsers = Object.keys(users).filter((id) => id !== socket.id && users[id].allowMatching);
+
         if (availableUsers.length > 0) {
             const partnerId = availableUsers[Math.floor(Math.random() * availableUsers.length)];
             const password = generatePassword();
 
-            // マッチングメッセージを送信
-            io.to(socket.id).emit('matchingResult', { success: true, partner: partnerId });
-            io.to(partnerId).emit('matchingResult', { success: true, partner: socket.id });
-
-            // DMで詳細を送信
-            io.to(socket.id).emit('dm', `マッチングに成功しました！\nURL: https://ab7.onrender.com\nパスワード: ${password}`);
-            io.to(partnerId).emit('dm', `マッチングに成功しました！\nURL: https://ab7.onrender.com\nパスワード: ${password}`);
+            io.to(socket.id).emit('message', `マッチングに成功しました！\nURL: https://ab7.onrender.com\nパスワード: ${password}`);
+            io.to(partnerId).emit('message', `マッチングに成功しました！\nURL: https://ab7.onrender.com\nパスワード: ${password}`);
 
             // 状態リセット
-            delete users[socket.id];
-            delete users[partnerId];
+            users[socket.id].allowMatching = false;
+            users[partnerId].allowMatching = false;
+
+            console.log('マッチング成功:', socket.id, partnerId);
         } else {
-            socket.emit('matchingResult', { success: false });
+            socket.emit('message', '現在マッチング可能なユーザーがいません。');
         }
     });
 
@@ -76,7 +77,6 @@ io.on('connection', (socket) => {
     });
 });
 
-// サーバー起動
 const PORT = 3000;
 server.listen(PORT, () => {
     console.log(`サーバー起動: http://localhost:${PORT}`);
