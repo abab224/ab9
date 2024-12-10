@@ -44,7 +44,6 @@ document.getElementById('count').addEventListener('click', () => {
 // サーバーから人数を受け取る
 socket.on('countResponse', (count) => {
     addMessage(`現在のマッチング待ち人数: ${count}人`);
-    startButton.disabled = count < 2; // 2人以上で有効化
 });
 
 // マッチング開始
