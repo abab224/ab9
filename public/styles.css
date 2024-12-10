@@ -38,6 +38,11 @@ body {
     align-self: flex-start;
 }
 
+.message.user {
+    background-color: #d1e7dd;
+    align-self: flex-end;
+}
+
 /* ボタンエリア */
 .button-container {
     width: 90%;
@@ -59,6 +64,11 @@ body {
     cursor: pointer;
 }
 
-.button-container button:hover {
+.button-container button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.button-container button:hover:enabled {
     background-color: #0056b3;
 }

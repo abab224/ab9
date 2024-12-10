@@ -27,7 +27,6 @@ io.on('connection', (socket) => {
 
     // 初期化
     users[socket.id] = { allowMatching: false };
-    console.log('現在の状態:', users);
 
     // マッチング許可
     socket.on('allowMatching', () => {
@@ -46,7 +45,7 @@ io.on('connection', (socket) => {
     // マッチング待ち人数
     socket.on('getCount', () => {
         const count = Object.values(users).filter((u) => u.allowMatching).length;
-        socket.emit('message', `現在のマッチング待ち人数: ${count}人`);
+        socket.emit('countResponse', count);
     });
 
     // マッチング開始

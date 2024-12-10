@@ -1,36 +1,40 @@
 const socket = io();
 
-const chatMessages = document.getElementById('chatMessages');
-const allowButton = document.getElementById('allow');
-let isAllowed = false;
+const chatMessages = document.querySelector('.chat-container');
+const startButton = document.getElementById('start');
 
 // メッセージを画面に追加
-function addMessage(message) {
+function addMessage(message, type = 'system') {
     const messageElement = document.createElement('div');
-    messageElement.className = 'message';
+    messageElement.className = `message ${type}`;
     messageElement.textContent = message;
     chatMessages.appendChild(messageElement);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// マッチング許可・解除ボタンのトグル
-allowButton.addEventListener('click', () => {
-    if (isAllowed) {
-        socket.emit('disallowMatching');
-        allowButton.textContent = 'マッチングを許可する';
-    } else {
-        socket.emit('allowMatching');
-        allowButton.textContent = 'マッチングを許可しない';
-    }
-    isAllowed = !isAllowed;
+// マッチング許可
+document.getElementById('allow').addEventListener('click', () => {
+    socket.emit('allowMatching');
 });
 
-// 他のボタンのイベントリスナー
+// マッチング許可解除
+document.getElementById('disallow').addEventListener('click', () => {
+    socket.emit('disallowMatching');
+});
+
+// マッチング待ち人数
 document.getElementById('count').addEventListener('click', () => {
     socket.emit('getCount');
 });
 
-document.getElementById('start').addEventListener('click', () => {
+// サーバーから人数を受け取る
+socket.on('countResponse', (count) => {
+    addMessage(`現在のマッチング待ち人数: ${count}人`);
+    startButton.disabled = count < 2;
+});
+
+// マッチング開始
+startButton.addEventListener('click', () => {
     socket.emit('startMatching');
 });
 
