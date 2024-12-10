@@ -62,12 +62,12 @@ io.on('connection', (socket) => {
         const partnerId = availableUsers[Math.floor(Math.random() * availableUsers.length)];
         const password = generatePassword();
 
-        // 両方にマッチング結果を送信
         const url = `<a href="https://ab7.onrender.com" target="_blank">https://ab7.onrender.com</a>`;
         const matchMessage = `マッチングに成功しました！<br>${url}<br>パスワード: <span class="password">${password}</span>`;
 
-        io.to(socket.id).emit('message', matchMessage);
-        io.to(partnerId).emit('message', matchMessage);
+        // マッチングされた2人にメッセージを送信
+        io.to(socket.id).emit('matchingResult', { message: matchMessage, partnerId });
+        io.to(partnerId).emit('matchingResult', { message: matchMessage, partnerId: socket.id });
 
         // マッチング許可状態をリセット
         users[socket.id].allowMatching = false;

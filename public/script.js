@@ -50,7 +50,8 @@ startButton.addEventListener('click', () => {
     socket.emit('startMatching');
 });
 
-// サーバーからのメッセージを受信
-socket.on('message', (message) => {
+// サーバーからのマッチング結果を受信
+socket.on('matchingResult', ({ message, partnerId }) => {
     addMessage(message);
+    console.log(`マッチングされた相手: ${partnerId}`);
 });
