@@ -7,9 +7,21 @@ const startButton = document.getElementById('start');
 function addMessage(message, type = 'system') {
     const messageElement = document.createElement('div');
     messageElement.className = `message ${type}`;
-    messageElement.textContent = message;
+    messageElement.innerHTML = message; // HTMLも適用
     chatMessages.appendChild(messageElement);
     chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // パスワードのコピー機能をセットアップ
+    messageElement.querySelectorAll('.password').forEach((passwordSpan) => {
+        const copyButton = document.createElement('button');
+        copyButton.textContent = 'コピー';
+        copyButton.style.marginLeft = '10px';
+        copyButton.addEventListener('click', () => {
+            navigator.clipboard.writeText(passwordSpan.textContent);
+            alert('パスワードをコピーしました！');
+        });
+        passwordSpan.after(copyButton);
+    });
 }
 
 // マッチング許可
