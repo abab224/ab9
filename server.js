@@ -30,16 +30,18 @@ io.on('connection', (socket) => {
 
     // マッチング許可
     socket.on('allowMatching', () => {
-        users[socket.id].allowMatching = true;
-        socket.emit('message', 'マッチングを許可しました。');
-        console.log('許可:', users);
+        if (!users[socket.id].allowMatching) {
+            users[socket.id].allowMatching = true;
+            socket.emit('message', 'マッチングを許可しました。');
+        }
     });
 
     // マッチング許可解除
     socket.on('disallowMatching', () => {
-        users[socket.id].allowMatching = false;
-        socket.emit('message', 'マッチング許可を解除しました。');
-        console.log('解除:', users);
+        if (users[socket.id].allowMatching) {
+            users[socket.id].allowMatching = false;
+            socket.emit('message', 'マッチング許可を解除しました。');
+        }
     });
 
     // マッチング待ち人数

@@ -27,13 +27,11 @@ function addMessage(message, type = 'system') {
 // マッチング許可
 document.getElementById('allow').addEventListener('click', () => {
     socket.emit('allowMatching');
-    addMessage('マッチングを許可しました。');
 });
 
 // マッチング許可解除
 document.getElementById('disallow').addEventListener('click', () => {
     socket.emit('disallowMatching');
-    addMessage('マッチング許可を解除しました。');
 });
 
 // マッチング待ち人数
