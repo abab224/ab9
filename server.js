@@ -52,24 +52,20 @@ io.on('connection', (socket) => {
     socket.on('startMatching', () => {
         const availableUsers = Object.keys(users).filter((id) => id !== socket.id && users[id].allowMatching);
 
-        // マッチング可能人数が1人以下の場合
         if (availableUsers.length === 0) {
             socket.emit('message', '現在マッチング可能なユーザーがいません。');
             return;
         }
 
-        // ランダムにマッチング
         const partnerId = availableUsers[Math.floor(Math.random() * availableUsers.length)];
         const password = generatePassword();
 
         const url = `<a href="https://ab7.onrender.com" target="_blank">https://ab7.onrender.com</a>`;
         const matchMessage = `マッチングに成功しました！<br>${url}<br>パスワード: <span class="password">${password}</span>`;
 
-        // マッチングされた2人にメッセージを送信
         io.to(socket.id).emit('matchingResult', { message: matchMessage, partnerId });
         io.to(partnerId).emit('matchingResult', { message: matchMessage, partnerId: socket.id });
 
-        // マッチング許可状態をリセット
         users[socket.id].allowMatching = false;
         users[partnerId].allowMatching = false;
 
