@@ -2,12 +2,16 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
 
 app.use(cors());
+
+// 静的ファイルを提供
+app.use(express.static(path.join(__dirname, 'public')));
 
 let users = {}; // マッチング許可状態の管理
 
