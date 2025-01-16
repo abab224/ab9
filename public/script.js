@@ -1,3 +1,4 @@
+// script.js (修正箇所なし)
 const socket = io();
 
 const chatMessages = document.querySelector('.chat-container');

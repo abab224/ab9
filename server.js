@@ -1,3 +1,4 @@
+// server.js (修正箇所あり)
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -52,6 +53,11 @@ io.on('connection', (socket) => {
 
     // マッチング開始
     socket.on('startMatching', () => {
+        if (!users[socket.id].allowMatching) {
+            socket.emit('message', 'マッチングを許可してください。');
+            return;
+        }
+
         const availableUsers = Object.keys(users).filter((id) => id !== socket.id && users[id].allowMatching);
 
         if (availableUsers.length === 0) {
